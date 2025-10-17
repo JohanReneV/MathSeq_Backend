@@ -9,7 +9,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Conexión a MySQL
+
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -23,14 +23,14 @@ db.connect(err => {
   console.log("✅ Conectado a MySQL correctamente");
 });
 
-// ==================== RUTAS ==================== //
 
-// Ruta de prueba
+
+
 app.get("/", (req, res) => {
   res.send("🚀 Backend MathSEQ funcionando");
 });
 
-// Obtener módulos
+
 app.get("/api/modulos", (req, res) => {
   const sql = "SELECT * FROM modulos ORDER BY orden ASC";
   db.query(sql, (err, result) => {
@@ -39,7 +39,7 @@ app.get("/api/modulos", (req, res) => {
   });
 });
 
-// Registrar usuario
+
 app.post("/api/usuarios/register", async (req, res) => {
   const { nombre, correo, contrasena, id_rol } = req.body;
   if (!nombre || !correo || !contrasena || !id_rol)
@@ -57,7 +57,7 @@ app.post("/api/usuarios/register", async (req, res) => {
   });
 });
 
-// Login usuario
+
 app.post("/api/usuarios/login", (req, res) => {
   const { correo, contrasena } = req.body;
   if (!correo || !contrasena) return res.status(400).json({ error: "Faltan datos" });
@@ -78,6 +78,6 @@ app.post("/api/usuarios/login", (req, res) => {
   });
 });
 
-// Iniciar servidor
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`));
