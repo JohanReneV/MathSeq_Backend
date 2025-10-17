@@ -39,6 +39,23 @@ app.get("/api/modulos", (req, res) => {
   });
 });
 
+app.get("/api/usuarios/get", (req, res) => {
+  const sql = "SELECT * FROM usuarios";
+  db.query(sql, (err, result) => {
+    if (err) return res.status(500).json({ error: "Error del servidor" });
+    res.json(result);
+  });
+});
+
+// Alias para permitir GET /api/usuarios
+app.get("/api/usuarios", (req, res) => {
+  const sql = "SELECT * FROM usuarios";
+  db.query(sql, (err, result) => {
+    if (err) return res.status(500).json({ error: "Error del servidor" });
+    res.json(result);
+  });
+});
+
 
 app.post("/api/usuarios/register", async (req, res) => {
   const { nombre, correo, contrasena, id_rol } = req.body;
@@ -60,6 +77,29 @@ app.post("/api/usuarios/register", async (req, res) => {
 
 app.post("/api/usuarios/login", (req, res) => {
   const { correo, contrasena } = req.body;
+  if (!correo || !contrasena) return res.status(400).json({ error: "Faltan datos" });
+
+  const sql = "SELECT * FROM usuarios WHERE correo = ?";
+  db.query(sql, [correo], async (err, results) => {
+    if (err) return res.status(500).json({ error: "Error del servidor" });
+    if (results.length === 0) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    const user = results[0];
+    const isMatch = await bcrypt.compare(contrasena, user.contrasena);
+    if (!isMatch) return res.status(401).json({ error: "Contraseña incorrecta" });
+
+    res.json({
+      message: "Login exitoso",
+      user: { id: user.id_usuario, nombre: user.nombre, correo: user.correo, id_rol: user.id_rol }
+    });
+  });
+});
+
+
+app.get("/api/usuarios/login", (req, res) => {
+  const correo = typeof req.query.correo === "string" ? req.query.correo : undefined;
+  const contrasena = typeof req.query.contrasena === "string" ? req.query.contrasena : undefined;
+
   if (!correo || !contrasena) return res.status(400).json({ error: "Faltan datos" });
 
   const sql = "SELECT * FROM usuarios WHERE correo = ?";
