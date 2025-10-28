@@ -139,49 +139,32 @@ export const generalRateLimit = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => {
+    // Saltar rate limiting para health checks y rutas de desarrollo
+    return req.path === '/health' || req.path === '/' || process.env.NODE_ENV === 'development';
+  },
   handler: (req, res) => {
     logger.security('Rate limit excedido', {
       ip: req.ip,
       userAgent: req.get('User-Agent'),
-      endpoint: req.path
+      endpoint: req.path,
+      environment: process.env.NODE_ENV
     });
     
     res.status(429).json({
       success: false,
       error: 'Demasiadas solicitudes, intenta de nuevo más tarde',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      retryAfter: Math.ceil(RATE_LIMIT_CONFIG.WINDOW_MS / 1000)
     });
   }
 });
 
 /**
- * Rate limiting para login
+ * Rate limiting para login - DESHABILITADO
+ * Sin límites para intentos de login
  */
-export const loginRateLimit = rateLimit({
-  windowMs: RATE_LIMIT_CONFIG.WINDOW_MS,
-  max: RATE_LIMIT_CONFIG.LOGIN_MAX_REQUESTS,
-  message: {
-    success: false,
-    error: 'Demasiados intentos de login, intenta de nuevo más tarde',
-    timestamp: new Date().toISOString()
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-  skipSuccessfulRequests: true, // No contar requests exitosos
-  handler: (req, res) => {
-    logger.security('Rate limit de login excedido', {
-      ip: req.ip,
-      userAgent: req.get('User-Agent'),
-      email: req.body?.correo || req.query?.correo
-    });
-    
-    res.status(429).json({
-      success: false,
-      error: 'Demasiados intentos de login, intenta de nuevo más tarde',
-      timestamp: new Date().toISOString()
-    });
-  }
-});
+// export const loginRateLimit = rateLimit({...}); // Comentado - sin límites para login
 
 /**
  * Rate limiting para registro

@@ -13,7 +13,6 @@ import {
   authenticateToken, 
   authorizeRole, 
   authorizeOwnResource,
-  loginRateLimit,
   registerRateLimit 
 } from "../middleware/security.js";
 import { USER_ROLES } from "../constants/index.js";
@@ -22,8 +21,8 @@ const router = express.Router();
 
 // Rutas públicas (sin autenticación)
 router.post("/register", registerRateLimit, registerUsuario);
-router.post("/login", loginRateLimit, loginUsuario);
-router.get("/login", loginRateLimit, loginUsuarioGet);
+router.post("/login", loginUsuario);
+router.get("/login", loginUsuarioGet);
 
 // Rutas protegidas (requieren autenticación)
 router.get("/", authenticateToken, getUsuarios);

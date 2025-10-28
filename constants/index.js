@@ -75,9 +75,9 @@ export const AUTH_CONFIG = {
 // Configuración de rate limiting
 export const RATE_LIMIT_CONFIG = {
   WINDOW_MS: 15 * 60 * 1000, // 15 minutos
-  MAX_REQUESTS: 100, // máximo 100 requests por ventana
-  LOGIN_MAX_REQUESTS: 5, // máximo 5 intentos de login por ventana
-  REGISTER_MAX_REQUESTS: 3 // máximo 3 registros por ventana
+  MAX_REQUESTS: process.env.NODE_ENV === 'production' ? 1000 : 100, // más permisivo en producción
+  REGISTER_MAX_REQUESTS: process.env.NODE_ENV === 'production' ? 10 : 3 // más registros en producción
+  // LOGIN_MAX_REQUESTS removido - sin límites para login
 };
 
 // Campos de ordenamiento permitidos
