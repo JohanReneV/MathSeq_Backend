@@ -17,12 +17,23 @@ Para que la aplicación funcione correctamente, necesitas configurar las siguien
 ## Variables Opcionales
 
 ### Servidor
-- `PORT`: Puerto del servidor (por defecto: 3000)
-- `HOST`: Host del servidor (por defecto: localhost)
+- `PORT`: Puerto del servidor (por defecto: 3000, **Render lo configura automáticamente**)
+- `HOST`: Host del servidor (por defecto: localhost, **se configura automáticamente en producción**)
 - `NODE_ENV`: Entorno de ejecución (development/production)
 
 ### CORS
 - `CORS_ORIGIN`: Origen permitido para CORS (por defecto: *)
+
+## Configuración para Render
+
+Para el despliegue en Render, las siguientes variables se configuran automáticamente:
+- `PORT`: Render asigna automáticamente un puerto
+- `HOST`: Se configura automáticamente como `0.0.0.0` en producción
+- `NODE_ENV`: Se establece como `production`
+
+**Variables que DEBES configurar manualmente en Render:**
+- `JWT_SECRET`: Genera un valor seguro (puedes usar el generador de Render)
+- `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`: Configuración de tu base de datos
 
 ## Ejemplo de archivo .env
 

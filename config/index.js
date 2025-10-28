@@ -6,7 +6,7 @@ const config = {
   // Configuración del servidor
   server: {
     port: process.env.PORT || 3000,
-    host: process.env.HOST || "localhost"
+    host: process.env.NODE_ENV === 'production' ? '0.0.0.0' : (process.env.HOST || "localhost")
   },
   
   // Configuración de la base de datos

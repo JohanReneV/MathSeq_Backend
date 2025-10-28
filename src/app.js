@@ -101,14 +101,15 @@ app.use((err, req, res, next) => {
 });
 
 // Iniciar servidor
-const PORT = config.server.port;
-const HOST = config.server.host;
+const PORT = process.env.PORT || config.server.port;
+const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : config.server.host;
 
 app.listen(PORT, HOST, () => {
   console.log(`🚀 Servidor MathSEQ v2.0 corriendo en http://${HOST}:${PORT}`);
   console.log(`📊 Health check disponible en http://${HOST}:${PORT}/health`);
   console.log(`🔒 Arquitectura: MVC + Services + Repository`);
   console.log(`🛡️ Seguridad: JWT + Rate Limiting + Helmet`);
+  console.log(`🌍 Entorno: ${process.env.NODE_ENV || 'development'}`);
 });
 
 // Manejo de errores no capturados
