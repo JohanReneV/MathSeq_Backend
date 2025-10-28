@@ -1,30 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-// Utilidades para logging
-export const logger = {
-  info: (message, data = null) => {
-    const timestamp = new Date().toISOString();
-    console.log(`[INFO] ${timestamp} - ${message}`, data ? JSON.stringify(data) : '');
-  },
-  
-  error: (message, error = null) => {
-    const timestamp = new Date().toISOString();
-    console.error(`[ERROR] ${timestamp} - ${message}`, error ? error.stack : '');
-  },
-  
-  warn: (message, data = null) => {
-    const timestamp = new Date().toISOString();
-    console.warn(`[WARN] ${timestamp} - ${message}`, data ? JSON.stringify(data) : '');
-  },
-  
-  debug: (message, data = null) => {
-    if (process.env.NODE_ENV === 'development') {
-      const timestamp = new Date().toISOString();
-      console.log(`[DEBUG] ${timestamp} - ${message}`, data ? JSON.stringify(data) : '');
-    }
-  }
-};
+// Importar logger avanzado
+export { logger } from './logger.js';
 
 // Utilidades para validación
 export const validators = {

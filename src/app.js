@@ -2,6 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import config from "../config/index.js";
 import routes from "../routes/index.js";
+// Importar conexión a base de datos para inicializarla
+import "../config/database.js";
 import { corsMiddleware, corsErrorHandler } from "../middleware/cors.js";
 import { 
   generalRateLimit,
