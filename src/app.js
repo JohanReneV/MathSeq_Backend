@@ -19,13 +19,13 @@ dotenv.config();
 const app = express();
 
 // Middleware de seguridad
-app.use(securityMiddleware);
 
 // Middleware global
 app.use(corsMiddleware);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+app.use(securityMiddleware);
 // Rate limiting general
 app.use(generalRateLimit);
 
