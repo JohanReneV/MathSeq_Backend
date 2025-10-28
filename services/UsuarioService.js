@@ -128,13 +128,19 @@ export class UsuarioService {
    * Actualiza un usuario
    * @param {number} userId - ID del usuario
    * @param {Object} updateData - Datos a actualizar
-   * @returns {Promise<Object>} Usuario actualizado
+   * @returns {Promise<Object>} Usuario actualizado con nuevo token si cambió el rol
    */
   async updateUser(userId, updateData) {
     const user = await this.usuarioRepository.findById(userId);
     if (!user) {
       throw new AppError('Usuario no encontrado', 404);
     }
+
+    // Verificar si está cambiando el rol
+    const roleChanged = updateData.id_rol && updateData.id_rol !== user.id_rol;
+    
+    // Verificar si está cambiando la contraseña
+    const passwordChanged = !!updateData.contrasena;
 
     // Si se está actualizando el email, verificar que no exista
     if (updateData.correo && updateData.correo !== user.correo) {
@@ -157,10 +163,38 @@ export class UsuarioService {
 
     logger.info(`Usuario actualizado: ${userId}`);
 
-    return {
-      id: userId,
+    // Obtener el usuario actualizado
+    const updatedUser = await this.usuarioRepository.findById(userId);
+
+    // Preparar respuesta
+    const response = {
+      user: {
+        id: updatedUser.id_usuario,
+        nombre: updatedUser.nombre,
+        correo: updatedUser.correo,
+        id_rol: updatedUser.id_rol
+      },
       message: 'Usuario actualizado exitosamente'
     };
+
+    // Si cambió el rol o la contraseña, generar un nuevo token
+    if (roleChanged || passwordChanged) {
+      const newToken = this.generateJWT(updatedUser);
+      response.token = newToken;
+      
+      if (roleChanged && passwordChanged) {
+        response.message = 'Usuario actualizado exitosamente. Nuevo token generado debido a cambio de rol y contraseña.';
+        logger.info(`Nuevo token generado para usuario ${userId} debido a cambio de rol y contraseña`);
+      } else if (roleChanged) {
+        response.message = 'Usuario actualizado exitosamente. Nuevo token generado debido a cambio de rol.';
+        logger.info(`Nuevo token generado para usuario ${userId} debido a cambio de rol`);
+      } else if (passwordChanged) {
+        response.message = 'Usuario actualizado exitosamente. Nuevo token generado debido a cambio de contraseña.';
+        logger.info(`Nuevo token generado para usuario ${userId} debido a cambio de contraseña`);
+      }
+    }
+
+    return response;
   }
 
   /**
